@@ -45,19 +45,19 @@ INSTALLED_APPS = [
     "axes",
 ]
 
-CACHES = {
-    'default': {
-        'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': 'redis://127.0.0.1:6379/1',
-        'OPTIONS': {
-            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-            'CONNECTION_POOL_KWARGS': {
-                'max_connections': 100,
-                'retry_on_timeout': True,
-            }
-        }
-    }
-}
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django_redis.cache.RedisCache',
+#         'LOCATION': 'redis://127.0.0.1:6379/1',
+#         'OPTIONS': {
+#             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+#             'CONNECTION_POOL_KWARGS': {
+#                 'max_connections': 100,
+#                 'retry_on_timeout': True,
+#             }
+#         }
+#     }
+# }
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -107,6 +107,18 @@ DATABASES = {
     }
 }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'calendar_db',                      
+#         'USER': 'user',
+#         'PASSWORD': '!!UZH_CNSP24_CALENDAR!!',
+#         'HOST': 'localhost',
+#         'PORT': '5432',
+#     }
+# }
+
+
 """
 ##CONECTAR CON POSTGRES
 DATABASES = {
@@ -155,7 +167,7 @@ AXES_FAILURE_LIMIT = 10  # Number of failed attempts
 
 AXES_COOLOFF_TIME = timedelta(minutes=5)  # Lockout period after reaching failure limit
 
-SECURE_SSL_REDIRECT = True
+SECURE_SSL_REDIRECT = False
 
 
 # Static files (CSS, JavaScript, Images)
