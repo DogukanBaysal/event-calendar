@@ -21,7 +21,7 @@ class SignInView(View):
         if forms.is_valid():
             email = forms.cleaned_data["email"]
             password = forms.cleaned_data["password"]
-            user = authenticate(email=email, password=password)
+            user = authenticate(email=email, password=password, request=request)
             if user:
                 login(request, user)
                 return redirect("calendarapp:calendar")

@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
+from datetime import timedelta
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -41,7 +42,22 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "calendarapp.apps.CalendarappConfig",
     "accounts.apps.AccountsConfig",
+    "axes",
 ]
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://127.0.0.1:6379/1',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+            'CONNECTION_POOL_KWARGS': {
+                'max_connections': 100,
+                'retry_on_timeout': True,
+            }
+        }
+    }
+}
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -51,7 +67,14 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "axes.middleware.AxesMiddleware",
 ]
+
+AUTHENTICATION_BACKENDS = [
+    'axes.backends.AxesBackend',
+    'django.contrib.auth.backends.ModelBackend'
+]
+
 
 ROOT_URLCONF = "eventcalendar.urls"
 
@@ -127,6 +150,12 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = False
+
+AXES_FAILURE_LIMIT = 10  # Number of failed attempts
+
+AXES_COOLOFF_TIME = timedelta(minutes=5)  # Lockout period after reaching failure limit
+
+SECURE_SSL_REDIRECT = True
 
 
 # Static files (CSS, JavaScript, Images)

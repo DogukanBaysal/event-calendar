@@ -17,6 +17,7 @@ from calendarapp.utils import Calendar
 from calendarapp.forms import EventForm, AddMemberForm
 
 
+
 def get_date(req_day):
     if req_day:
         year, month = (int(x) for x in req_day.split("-"))
