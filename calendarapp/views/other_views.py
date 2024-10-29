@@ -16,6 +16,9 @@ from calendarapp.models import EventMember, Event
 from calendarapp.utils import Calendar
 from calendarapp.forms import EventForm, AddMemberForm
 
+from django.utils.decorators import method_decorator
+from django_ratelimit.decorators import ratelimit
+
 
 
 def get_date(req_day):
@@ -56,6 +59,7 @@ class CalendarView(LoginRequiredMixin, generic.ListView):
         return context
 
 
+@method_decorator(ratelimit(key='ip', rate='20/m', method='POST'))
 @login_required(login_url="signup")
 def create_event(request):
     form = EventForm(request.POST or None)
@@ -81,6 +85,7 @@ class EventEdit(generic.UpdateView):
     template_name = "event.html"
 
 
+@method_decorator(ratelimit(key='ip', rate='20/m', method='GET'))
 @login_required(login_url="signup")
 def event_details(request, event_id):
     event = Event.objects.get(id=event_id)
@@ -116,6 +121,7 @@ class CalendarViewNew(LoginRequiredMixin, generic.View):
     template_name = "calendarapp/calendar.html"
     form_class = EventForm
 
+    @method_decorator(ratelimit(key='ip', rate='20/m', method='GET'))
     def get(self, request, *args, **kwargs):
         forms = self.form_class()
         events = Event.objects.get_all_events(user=request.user)
@@ -136,6 +142,8 @@ class CalendarViewNew(LoginRequiredMixin, generic.View):
                    "events_month": events_month}
         return render(request, self.template_name, context)
 
+    @method_decorator(ratelimit(key='ip', rate='20/m', method='POST'))
+    @login_required(login_url="signup")
     def post(self, request, *args, **kwargs):
         forms = self.form_class(request.POST)
         if forms.is_valid():
@@ -145,9 +153,10 @@ class CalendarViewNew(LoginRequiredMixin, generic.View):
             return redirect("calendarapp:calendar")
         context = {"form": forms}
         return render(request, self.template_name, context)
+    
 
-
-
+@method_decorator(ratelimit(key='ip', rate='20/m', method='POST'))
+@login_required(login_url="signup")
 def delete_event(request, event_id):
     event = get_object_or_404(Event, id=event_id)
     if request.method == 'POST':
@@ -156,6 +165,8 @@ def delete_event(request, event_id):
     else:
         return JsonResponse({'message': 'Error!'}, status=400)
 
+@method_decorator(ratelimit(key='ip', rate='20/m', method='POST'))
+@login_required(login_url="signup")
 def next_week(request, event_id):
     event = get_object_or_404(Event, id=event_id)
     if request.method == 'POST':
@@ -168,6 +179,8 @@ def next_week(request, event_id):
     else:
         return JsonResponse({'message': 'Error!'}, status=400)
 
+@method_decorator(ratelimit(key='ip', rate='20/m', method='POST'))
+@login_required(login_url="signup")
 def next_day(request, event_id):
 
     event = get_object_or_404(Event, id=event_id)
