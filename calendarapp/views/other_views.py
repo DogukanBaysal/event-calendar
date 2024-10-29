@@ -1,5 +1,7 @@
 # cal/views.py
 
+from base64 import b64decode, b64encode
+from django.conf import settings
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
 from django.views import generic
@@ -18,7 +20,11 @@ from calendarapp.forms import EventForm, AddMemberForm
 
 from django.utils.decorators import method_decorator
 from django_ratelimit.decorators import ratelimit
+import rsa
 
+
+publicKey = rsa.PublicKey(settings.PUBLIC_KEY_N, settings.PUBLIC_KEY_E)
+privateKey = rsa.PrivateKey(settings.PRIVATE_KEY_N, settings.PRIVATE_KEY_E, settings.PRIVATE_KEY_D, settings.PRIVATE_KEY_P, settings.PRIVATE_KEY_Q)
 
 
 def get_date(req_day):
@@ -131,32 +137,33 @@ class CalendarViewNew(LoginRequiredMixin, generic.View):
         for event in events:
             event_list.append(
                 {   "id": event.id,
-                    "title": event.title,
+                    "title": rsa.decrypt(b64decode(event.title), privateKey).decode('utf8'),
                     "start": event.start_time.strftime("%Y-%m-%dT%H:%M:%S"),
                     "end": event.end_time.strftime("%Y-%m-%dT%H:%M:%S"),
-                    "description": event.description,
+                    "description": rsa.decrypt(b64decode(event.description), privateKey).decode('utf8'),
                 }
             )
-        
+
         context = {"form": forms, "events": event_list,
                    "events_month": events_month}
         return render(request, self.template_name, context)
 
     @method_decorator(ratelimit(key='ip', rate='20/m', method='POST'))
-    @login_required(login_url="signup")
     def post(self, request, *args, **kwargs):
         forms = self.form_class(request.POST)
         if forms.is_valid():
             form = forms.save(commit=False)
             form.user = request.user
+            form.description = b64encode(rsa.encrypt(forms.cleaned_data['description'].encode(), publicKey)).decode()
+            print(form.description)
+            form.title = b64encode(rsa.encrypt(forms.cleaned_data['title'].encode('utf8'), publicKey)).decode()
             form.save()
             return redirect("calendarapp:calendar")
         context = {"form": forms}
         return render(request, self.template_name, context)
     
 
-@method_decorator(ratelimit(key='ip', rate='20/m', method='POST'))
-@login_required(login_url="signup")
+
 def delete_event(request, event_id):
     event = get_object_or_404(Event, id=event_id)
     if request.method == 'POST':
@@ -165,8 +172,7 @@ def delete_event(request, event_id):
     else:
         return JsonResponse({'message': 'Error!'}, status=400)
 
-@method_decorator(ratelimit(key='ip', rate='20/m', method='POST'))
-@login_required(login_url="signup")
+
 def next_week(request, event_id):
     event = get_object_or_404(Event, id=event_id)
     if request.method == 'POST':
@@ -179,8 +185,7 @@ def next_week(request, event_id):
     else:
         return JsonResponse({'message': 'Error!'}, status=400)
 
-@method_decorator(ratelimit(key='ip', rate='20/m', method='POST'))
-@login_required(login_url="signup")
+
 def next_day(request, event_id):
 
     event = get_object_or_404(Event, id=event_id)

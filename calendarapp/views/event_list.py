@@ -12,7 +12,6 @@ class AllEventsListView(ListView):
     template_name = "calendarapp/events_list.html"
     model = Event
 
-    @method_decorator(ratelimit(key='ip', rate='20/m', method='GET'))
     def get_queryset(self):
         return Event.objects.get_all_events(user=self.request.user)
 
@@ -23,7 +22,6 @@ class RunningEventsListView(ListView):
     template_name = "calendarapp/events_list.html"
     model = Event
 
-    @method_decorator(ratelimit(key='ip', rate='20/m', method='GET'))
     def get_queryset(self):
         return Event.objects.get_running_events(user=self.request.user)
 
@@ -33,7 +31,6 @@ class UpcomingEventsListView(ListView):
     template_name = "calendarapp/events_list.html"
     model = Event
 
-    @method_decorator(ratelimit(key='ip', rate='20/m', method='GET'))
     def get_queryset(self):
         return Event.objects.get_upcoming_events(user=self.request.user)
     
@@ -43,7 +40,6 @@ class CompletedEventsListView(ListView):
     template_name = "calendarapp/events_list.html"
     model = Event
 
-    @method_decorator(ratelimit(key='ip', rate='20/m', method='GET'))
     def get_queryset(self):
         return Event.objects.get_completed_events(user=self.request.user)
     
