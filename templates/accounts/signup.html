@@ -1,3 +1,4 @@
+{% load honeypot %}
 <!DOCTYPE html>
 <html lang="en">
 	{% load static %}
@@ -62,6 +63,9 @@
                                                         <span class="text-danger">{{ form.errors.password2 }}</span>
                                                     </div>
                                                 </div>
+                                                    {% render_honeypot_field "Email" %}
+                                                    {% render_honeypot_field "Password1" %}
+                                                    {% render_honeypot_field "Password2" %}
                                                 <div class="col-md-12 my-4">
                                                     <div class="form-group">
                                                         <div class="w-100">

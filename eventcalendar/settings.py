@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     "accounts.apps.AccountsConfig",
     "axes",
     'encrypted_model_fields',
+    'honeypot'
 ]
 
 # CACHES = {
