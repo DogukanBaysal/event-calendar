@@ -21,7 +21,6 @@ from calendarapp.forms import EventForm, AddMemberForm
 from django.utils.decorators import method_decorator
 from django_ratelimit.decorators import ratelimit
 from honeypot.decorators import check_honeypot
-import rsa
 from cryptography.fernet import Fernet
 
 

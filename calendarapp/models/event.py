@@ -3,9 +3,7 @@ from datetime import datetime
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
-import rsa
 from cryptography.fernet import Fernet
-
 from calendarapp.models import EventAbstract
 from accounts.models import User
 
