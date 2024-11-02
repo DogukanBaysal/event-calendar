@@ -20,6 +20,7 @@ from calendarapp.forms import EventForm, AddMemberForm
 
 from django.utils.decorators import method_decorator
 from django_ratelimit.decorators import ratelimit
+from honeypot.decorators import check_honeypot
 import rsa
 
 
@@ -122,6 +123,11 @@ class EventMemberDeleteView(generic.DeleteView):
     template_name = "event_delete.html"
     success_url = reverse_lazy("calendarapp:calendar")
 
+
+@method_decorator(check_honeypot(field_name="Title"), name='post')
+@method_decorator(check_honeypot(field_name="Description"), name='post')
+@method_decorator(check_honeypot(field_name="Start_Date"), name='post')
+@method_decorator(check_honeypot(field_name="End_Date"), name='post')
 class CalendarViewNew(LoginRequiredMixin, generic.View):
     login_url = "accounts:signin"
     template_name = "calendarapp/calendar.html"
@@ -137,10 +143,10 @@ class CalendarViewNew(LoginRequiredMixin, generic.View):
         for event in events:
             event_list.append(
                 {   "id": event.id,
-                    "title": rsa.decrypt(b64decode(event.title), privateKey).decode('utf8'),
+                    "title": event.title,
                     "start": event.start_time.strftime("%Y-%m-%dT%H:%M:%S"),
                     "end": event.end_time.strftime("%Y-%m-%dT%H:%M:%S"),
-                    "description": rsa.decrypt(b64decode(event.description), privateKey).decode('utf8'),
+                    "description": event.description,
                 }
             )
 
@@ -154,7 +160,7 @@ class CalendarViewNew(LoginRequiredMixin, generic.View):
         if forms.is_valid():
             form = forms.save(commit=False)
             form.user = request.user
-            form.description = b64encode(rsa.encrypt(forms.cleaned_data['description'].encode(), publicKey)).decode()
+            form.description = b64encode(rsa.encrypt(forms.cleaned_data['description'].encode('utf8'), publicKey)).decode()
             print(form.description)
             form.title = b64encode(rsa.encrypt(forms.cleaned_data['title'].encode('utf8'), publicKey)).decode()
             form.save()
@@ -163,9 +169,9 @@ class CalendarViewNew(LoginRequiredMixin, generic.View):
         return render(request, self.template_name, context)
     
 
-
 def delete_event(request, event_id):
     event = get_object_or_404(Event, id=event_id)
+    print(request)
     if request.method == 'POST':
         event.delete()
         return JsonResponse({'message': 'Event sucess delete.'})

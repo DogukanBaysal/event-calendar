@@ -3,11 +3,14 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.utils.decorators import method_decorator
 from django_ratelimit.decorators import ratelimit
+from honeypot.decorators import check_honeypot
 
 
 from accounts.forms import SignInForm
 
 
+@method_decorator(check_honeypot(field_name="Email"), name='post')
+@method_decorator(check_honeypot(field_name="Password"), name='post')
 class SignInView(View):
     """ User registration view """
 

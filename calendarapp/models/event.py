@@ -57,6 +57,14 @@ class EventManager(models.Manager):
             upcoming_event.title = rsa.decrypt(b64decode(upcoming_event.title), privateKey).decode('utf8')
             upcoming_event.description = rsa.decrypt(b64decode(upcoming_event.description), privateKey).decode('utf8')
         return upcoming_events
+    
+
+    def get_latest_events(self, user):
+        running_events = Event.objects.filter(user=user).order_by("-id")[:10]
+        for running_event in running_events:
+            running_event.title = rsa.decrypt(b64decode(running_event.title), privateKey).decode('utf8')
+            running_event.description = rsa.decrypt(b64decode(running_event.description), privateKey).decode('utf8')
+        return running_events
 
 
 class Event(EventAbstract):

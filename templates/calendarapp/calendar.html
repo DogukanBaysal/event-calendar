@@ -1,6 +1,7 @@
 {% extends 'base/base.html' %}
 {% load static %}
 {% block title %}Event Calendar{% endblock title %}
+{% load honeypot %}
 
 {% block extracss %}
   <link href="{% static 'calender/main.css' %}" rel="stylesheet" />
@@ -28,7 +29,7 @@
                       <div class="fc-event">
                           <h3>{{ event.title }}</h3>
                           <p>{{ event.description }}</p>
-                          <p>{{event.id}}</p>
+                          <p>{{ event.id }}</p>
                           <p>From: {{ event.start_time }}</p>
                           <p>To: {{ event.end_time }}</p>
                       </div>
@@ -69,6 +70,10 @@
                                     <label for="message-text" class="col-form-label">End Date:</label>
                                     {{ form.end_time }}
                                 </div>
+                                {% render_honeypot_field "Title" %}
+                                {% render_honeypot_field "Description" %}
+                                {% render_honeypot_field "Start_Date" %}
+                                {% render_honeypot_field "End_Date" %}
                             </div>
                             <div class="modal-footer">
                                 <button id="modalClose2" type="button" class="btn btn-danger">Close</button>
@@ -257,7 +262,7 @@
               url: `/delete_event/${eventId}/`,
               type: 'POST',
               data: {
-                  csrfmiddlewaretoken: '{{ csrf_token }}',
+                  csrfmiddlewaretoken: '{{ csrf_token }}'
               },
               success: function(response) {
                   alert(response.message);
