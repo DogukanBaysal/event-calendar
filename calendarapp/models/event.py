@@ -71,8 +71,8 @@ class Event(EventAbstract):
     """ Event model """
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="events")
-    title = models.CharField(max_length=200)
-    description = models.TextField()
+    title = models.CharField(max_length=60)
+    description = models.TextField(max_length=200)
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
 

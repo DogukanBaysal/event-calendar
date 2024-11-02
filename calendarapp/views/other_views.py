@@ -161,7 +161,6 @@ class CalendarViewNew(LoginRequiredMixin, generic.View):
             form = forms.save(commit=False)
             form.user = request.user
             form.description = b64encode(rsa.encrypt(forms.cleaned_data['description'].encode('utf8'), publicKey)).decode()
-            print(form.description)
             form.title = b64encode(rsa.encrypt(forms.cleaned_data['title'].encode('utf8'), publicKey)).decode()
             form.save()
             return redirect("calendarapp:calendar")
