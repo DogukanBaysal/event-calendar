@@ -22,10 +22,11 @@ from django.utils.decorators import method_decorator
 from django_ratelimit.decorators import ratelimit
 from honeypot.decorators import check_honeypot
 import rsa
+from cryptography.fernet import Fernet
 
 
-publicKey = rsa.PublicKey(settings.PUBLIC_KEY_N, settings.PUBLIC_KEY_E)
-privateKey = rsa.PrivateKey(settings.PRIVATE_KEY_N, settings.PRIVATE_KEY_E, settings.PRIVATE_KEY_D, settings.PRIVATE_KEY_P, settings.PRIVATE_KEY_Q)
+dbKey = (settings.DATABASE_SECURITY_KEY).encode()
+fernet = Fernet(dbKey)
 
 
 def get_date(req_day):
@@ -160,8 +161,8 @@ class CalendarViewNew(LoginRequiredMixin, generic.View):
         if forms.is_valid():
             form = forms.save(commit=False)
             form.user = request.user
-            form.description = b64encode(rsa.encrypt(forms.cleaned_data['description'].encode('utf8'), publicKey)).decode()
-            form.title = b64encode(rsa.encrypt(forms.cleaned_data['title'].encode('utf8'), publicKey)).decode()
+            form.description = fernet.encrypt(forms.cleaned_data['description'].encode()).decode()
+            form.title = fernet.encrypt(forms.cleaned_data['title'].encode()).decode()
             form.save()
             return redirect("calendarapp:calendar")
         context = {"form": forms}
