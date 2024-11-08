@@ -19,7 +19,6 @@ class EventManager(models.Manager):
     def get_all_events(self, user):
         events = Event.objects.filter(user=user, is_active=True, is_deleted=False)
         for event in events:
-            print(event.description)
             event.title = bleach.clean(fernet.decrypt(event.title.encode()).decode())
             event.description = bleach.clean(fernet.decrypt(event.description.encode()).decode())
         return events

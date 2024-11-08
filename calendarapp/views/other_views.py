@@ -22,7 +22,7 @@ from django.utils.decorators import method_decorator
 from django_ratelimit.decorators import ratelimit
 from honeypot.decorators import check_honeypot
 from cryptography.fernet import Fernet
-
+import bleach
 
 dbKey = (settings.DATABASE_SECURITY_KEY).encode()
 fernet = Fernet(dbKey)
@@ -66,7 +66,7 @@ class CalendarView(LoginRequiredMixin, generic.ListView):
         return context
 
 
-@method_decorator(ratelimit(key='ip', rate='20/m', method='POST'))
+@method_decorator(ratelimit(key='ip', rate='5/m', method='POST'))
 @login_required(login_url="signup")
 def create_event(request):
     form = EventForm(request.POST or None)
@@ -92,7 +92,7 @@ class EventEdit(generic.UpdateView):
     template_name = "event.html"
 
 
-@method_decorator(ratelimit(key='ip', rate='20/m', method='GET'))
+@method_decorator(ratelimit(key='ip', rate='5/m', method='GET'))
 @login_required(login_url="signup")
 def event_details(request, event_id):
     event = Event.objects.get(id=event_id)
@@ -133,7 +133,7 @@ class CalendarViewNew(LoginRequiredMixin, generic.View):
     template_name = "calendarapp/calendar.html"
     form_class = EventForm
 
-    @method_decorator(ratelimit(key='ip', rate='20/m', method='GET'))
+    @method_decorator(ratelimit(key='ip', rate='5/m', method='GET'))
     def get(self, request, *args, **kwargs):
         forms = self.form_class()
         events = Event.objects.get_all_events(user=request.user)
@@ -154,14 +154,14 @@ class CalendarViewNew(LoginRequiredMixin, generic.View):
                    "events_month": events_month}
         return render(request, self.template_name, context)
 
-    @method_decorator(ratelimit(key='ip', rate='20/m', method='POST'))
+    @method_decorator(ratelimit(key='ip', rate='5/m', method='POST'))
     def post(self, request, *args, **kwargs):
         forms = self.form_class(request.POST)
         if forms.is_valid():
             form = forms.save(commit=False)
             form.user = request.user
-            form.description = fernet.encrypt(forms.cleaned_data['description'].encode()).decode()
-            form.title = fernet.encrypt(forms.cleaned_data['title'].encode()).decode()
+            form.description = fernet.encrypt(bleach.clean(forms.cleaned_data['description']).encode()).decode()
+            form.title = fernet.encrypt(bleach.clean(forms.cleaned_data['title']).encode()).decode()
             form.save()
             return redirect("calendarapp:calendar")
         context = {"form": forms}
@@ -170,7 +170,6 @@ class CalendarViewNew(LoginRequiredMixin, generic.View):
 
 def delete_event(request, event_id):
     event = get_object_or_404(Event, id=event_id)
-    print(request)
     if request.method == 'POST':
         event.delete()
         return JsonResponse({'message': 'Event sucess delete.'})

@@ -182,7 +182,7 @@ USE_L10N = True
 
 USE_TZ = False
 
-AXES_FAILURE_LIMIT = 10  # Number of failed attempts
+AXES_FAILURE_LIMIT = 5  # Number of failed attempts
 
 AXES_COOLOFF_TIME = timedelta(minutes=5)  # Lockout period after reaching failure limit
 

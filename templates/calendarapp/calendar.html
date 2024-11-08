@@ -113,8 +113,8 @@
                           </div>
                           <div class="modal-footer">
                               <button id="delete-event-button" data-event-id="" type="button" class="btn btn-danger">Delete</button>
-                              <button id="add-to-next-week" data-event-id-week="" type="button" class="btn btn-success">Next Week</button>
-                              <button id="add-to-next-day" data-event-id-day="" type="button" class="btn btn-primary">Next Day</button>
+                              <!-- <button id="add-to-next-week" data-event-id-week="" type="button" class="btn btn-success">Next Week</button>
+                              <button id="add-to-next-day" data-event-id-day="" type="button" class="btn btn-primary">Next Day</button> -->
 
                           </div>
                       </form>
@@ -157,9 +157,6 @@
         selectable: true,
         selectMirror: true,
         select: function(arg) {
-          console.log('clicked')
-          console.log(arg.start)
-          console.log(arg.end)
           var modal = document.getElementById('eventModal')
           modal.style.display = 'block'
           document.getElementById('id_start_time').value = converterDataParaDjangoFormat(arg.start);
@@ -175,8 +172,6 @@
         // bangladesh Holidays
         // events: 'bn.bd#holiday@group.v.calendar.google.com',
         eventClick: function(arg) {
-          
-          console.log('clicked')
           var title = arg.event.title;
           var start = formatDateTime(arg.event.start) ;
           var end = formatDateTime(arg.event.end);
@@ -191,12 +186,12 @@
           var modalEnd = document.getElementById('end_event_detail'); 
           var modalDescripition = document.getElementById('description_event_detail'); 
           var deleteButton = document.getElementById("delete-event-button");
-          var nextWeek = document.getElementById("add-to-next-week");
-          var nextDay = document.getElementById("add-to-next-day");
+        //   var nextWeek = document.getElementById("add-to-next-week");
+        //   var nextDay = document.getElementById("add-to-next-day");
 
           deleteButton.setAttribute("data-event-id", id);
-          nextWeek.setAttribute("data-event-id-week", id);
-          nextDay.setAttribute("data-event-id-day", id);
+        //   nextWeek.setAttribute("data-event-id-week", id);
+        //   nextDay.setAttribute("data-event-id-day", id);
           modal.style.display = 'block' 
           
           modalTitle.textContent = title;
@@ -254,45 +249,45 @@
           });
       }});
       
-      document.getElementById('add-to-next-week').addEventListener('click', function() {
-          const eventId = this.getAttribute('data-event-id-week');
-          if (confirm('Are you sure you want add this event to next week?')) {
-              $.ajax({
-                url: `/next_week/${eventId}/`,
-                  type: 'POST',
-                  data: {
-                      csrfmiddlewaretoken: '{{ csrf_token }}',
-                  },
-                  success: function(response) {
-                      alert(response.message);
-                      window.location.reload();
-                  },
-                  error: function(xhr, status, error) {
-                      alert('Error!');
-                  }
-              });
-          }
-  });
+//       document.getElementById('add-to-next-week').addEventListener('click', function() {
+//           const eventId = this.getAttribute('data-event-id-week');
+//           if (confirm('Are you sure you want add this event to next week?')) {
+//               $.ajax({
+//                 url: `/next_week/${eventId}/`,
+//                   type: 'POST',
+//                   data: {
+//                       csrfmiddlewaretoken: '{{ csrf_token }}',
+//                   },
+//                   success: function(response) {
+//                       alert(response.message);
+//                       window.location.reload();
+//                   },
+//                   error: function(xhr, status, error) {
+//                       alert('Error!');
+//                   }
+//               });
+//           }
+//   });
 
-  document.getElementById('add-to-next-day').addEventListener('click', function() {
-    const eventId = this.getAttribute('data-event-id-day');
-    if (confirm('Are you sure you want add this event to next day?')) {
-        $.ajax({
-          url: `/next_day/${eventId}/`,
-            type: 'POST',
-            data: {
-                csrfmiddlewaretoken: '{{ csrf_token }}',
-            },
-            success: function(response) {
-                alert(response.message);
-                window.location.reload();
-            },
-            error: function(xhr, status, error) {
-                alert('Error!');
-            }
-        });
-    }
-});
+//   document.getElementById('add-to-next-day').addEventListener('click', function() {
+//     const eventId = this.getAttribute('data-event-id-day');
+//     if (confirm('Are you sure you want add this event to next day?')) {
+//         $.ajax({
+//           url: `/next_day/${eventId}/`,
+//             type: 'POST',
+//             data: {
+//                 csrfmiddlewaretoken: '{{ csrf_token }}',
+//             },
+//             success: function(response) {
+//                 alert(response.message);
+//                 window.location.reload();
+//             },
+//             error: function(xhr, status, error) {
+//                 alert('Error!');
+//             }
+//         });
+//     }
+// });
 
 </script>
 {% endblock extrascripts %}
