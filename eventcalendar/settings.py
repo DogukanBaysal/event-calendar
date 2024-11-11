@@ -10,6 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
+import base64
+from datetime import timedelta
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -21,6 +23,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "i8e1s3!_(fjsiv%1pn3sb3o=s)!p*nzwh1$gp5-l&%nb!d=y_s"
+
+DATABASE_SECURITY_KEY = "ri8XygzbJi4f1_C8ACfbtjJyWcni54mxd6KVnieFLxo="
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -41,7 +45,23 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "calendarapp.apps.CalendarappConfig",
     "accounts.apps.AccountsConfig",
+    "axes",
+    'honeypot'
 ]
+
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django_redis.cache.RedisCache',
+#         'LOCATION': 'redis://127.0.0.1:6379/1',
+#         'OPTIONS': {
+#             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+#             'CONNECTION_POOL_KWARGS': {
+#                 'max_connections': 100,
+#                 'retry_on_timeout': True,
+#             }
+#         }
+#     }
+# }
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -51,7 +71,14 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "axes.middleware.AxesMiddleware",
 ]
+
+AUTHENTICATION_BACKENDS = [
+    'axes.backends.AxesBackend',
+    'django.contrib.auth.backends.ModelBackend'
+]
+
 
 ROOT_URLCONF = "eventcalendar.urls"
 
@@ -84,6 +111,18 @@ DATABASES = {
     }
 }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'calendar_db',                      
+#         'USER': 'user',
+#         'PASSWORD': '!!UZH_CNSP24_CALENDAR!!',
+#         'HOST': 'localhost',
+#         'PORT': '5432',
+#     }
+# }
+
+
 """
 ##CONECTAR CON POSTGRES
 DATABASES = {
@@ -111,6 +150,21 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation." "MinimumLengthValidator"},
     {"NAME": "django.contrib.auth.password_validation." "CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation." "NumericPasswordValidator"},
+    {
+        'NAME': 'eventcalendar.validators.NumericPasswordValidator',
+    },
+    {
+        'NAME': 'eventcalendar.validators.UppercasePasswordValidator',
+    },
+    {
+        'NAME': 'eventcalendar.validators.LowercasePasswordValidator',
+    },
+    {
+        'NAME': 'eventcalendar.validators.SpecialCharacterPasswordValidator',
+    },
+    {
+        'NAME': 'eventcalendar.validators.NumericCharacterPasswordValidator',
+    },
 ]
 
 AUTH_USER_MODEL = "accounts.User"
@@ -127,6 +181,14 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = False
+
+AXES_FAILURE_LIMIT = 5  # Number of failed attempts
+
+AXES_COOLOFF_TIME = timedelta(minutes=3)  # Lockout period after reaching failure limit
+
+SECURE_SSL_REDIRECT = False
+
+AXES_LOCKOUT_PARAMETERS = ["username"]
 
 
 # Static files (CSS, JavaScript, Images)

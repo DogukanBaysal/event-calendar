@@ -1,10 +1,24 @@
 services:
 
+  db:
+    image: postgres:latest
+    container_name: db
+    environment:
+      POSTGRES_DB: calendar_db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: "!!UZH_CNSP24_CALENDAR!!"
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - db_data:/var/lib/postgresql/data  # pesistantly store the data even when the docker is deleted or stopped
+
   # web service, frontend and backend included
   web:
     build: .  # build the docker, using the dockfile in current dir
 
-    command: python manage.py runserver 0.0.0.0:8000
+    command: ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
 
     ports:
       - "8000:8000"
