@@ -23,13 +23,13 @@ class SignInView(View):
         return render(request, self.template_name, context)
 
     
-    @method_decorator(ratelimit(key='ip', rate='15/m', method='POST'))
+    @method_decorator(ratelimit(key='ip', rate='5/m', method='POST'))
     def post(self, request, *args, **kwargs):
         forms = self.form_class(request.POST)
         if forms.is_valid():
             email = forms.cleaned_data["email"]
             password = forms.cleaned_data["password"]
-            user = authenticate(email=email, password=password, request=request)
+            user = authenticate(username=email, email=email, password=password, request=request)
             if user:
                 login(request, user)
                 return redirect("calendarapp:calendar")

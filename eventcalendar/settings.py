@@ -184,9 +184,11 @@ USE_TZ = False
 
 AXES_FAILURE_LIMIT = 5  # Number of failed attempts
 
-AXES_COOLOFF_TIME = timedelta(minutes=5)  # Lockout period after reaching failure limit
+AXES_COOLOFF_TIME = timedelta(minutes=3)  # Lockout period after reaching failure limit
 
 SECURE_SSL_REDIRECT = False
+
+AXES_LOCKOUT_PARAMETERS = ["username"]
 
 
 # Static files (CSS, JavaScript, Images)

@@ -20,7 +20,7 @@ class SignUpView(View):
         context = {"form": forms}
         return render(request, self.template_name, context)
 
-    @method_decorator(ratelimit(key='ip', rate='15/m', method='POST'))
+    @method_decorator(ratelimit(key='ip', rate='5/m', method='POST'))
     def post(self, request, *args, **kwargs):
         forms = self.form_class(request.POST)
         if forms.is_valid():
