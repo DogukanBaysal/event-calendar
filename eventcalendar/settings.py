@@ -26,9 +26,8 @@ SECRET_KEY = "i8e1s3!_(fjsiv%1pn3sb3o=s)!p*nzwh1$gp5-l&%nb!d=y_s"
 
 DATABASE_SECURITY_KEY = "ri8XygzbJi4f1_C8ACfbtjJyWcni54mxd6KVnieFLxo="
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-#DEBUG = False
+
+DEBUG = False
 DEFAULT_AUTO_FIELD='django.db.models.AutoField' 
 
 ALLOWED_HOSTS = ["*"]
@@ -181,6 +180,10 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = False
+
+SESSION_COOKIE_SECURE = True
+
+CSRF_COOKIE_SECURE = True
 
 AXES_FAILURE_LIMIT = 5  # Number of failed attempts
 
