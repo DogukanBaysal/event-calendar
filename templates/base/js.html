@@ -5,3 +5,42 @@
 <script src="{% static 'js/main.js' %}"></script>
 <!-- The javascript plugin to display page loading on top-->
 <script src="{% static 'js/plugins/pace.min.js'%}"></script>
+
+<script>
+    // Set session expiration time
+    const sessionTimeout = 5 * 60; // 5 minutes in seconds
+    let timeLeft = sessionTimeout;
+
+    // Update the timer every second
+    const timer = setInterval(() => {
+        timeLeft--;
+
+        // Check if the time has expired
+        if (timeLeft <= 0) {
+            clearInterval(timer);
+            // Automatically call the signout endpoint
+            $.ajax({
+                url: "{% url 'accounts:signout' %}",
+                type: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}", // Ensure CSRF token is sent for security
+                },
+                success: function () {
+                    // Redirect to sign-in page or homepage after signout
+                    window.location.href = "{% url 'accounts:signin' %}";
+                },
+                error: function () {
+                    alert("An error occurred during signout. Please try again.");
+                },
+            });
+        }
+    }, 1000);
+
+    // Reset timer on user activity (optional)
+    document.addEventListener("mousemove", resetTimer);
+    document.addEventListener("keypress", resetTimer);
+
+    function resetTimer() {
+        timeLeft = sessionTimeout;
+    }
+</script>
