@@ -1,5 +1,3 @@
-# cal/views.py
-
 import calendar
 from datetime import timedelta, datetime, date
 
@@ -22,7 +20,7 @@ from honeypot.decorators import check_honeypot
 from cryptography.fernet import Fernet
 import bleach
 
-dbKey = (settings.DATABASE_SECURITY_KEY).encode()
+dbKey = settings.DATABASE_SECURITY_KEY.encode()
 fernet = Fernet(dbKey)
 
 

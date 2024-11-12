@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     "calendarapp.apps.CalendarappConfig",
     "accounts.apps.AccountsConfig",
     "axes",
-    'honeypot'
+    'honeypot',
+    "sslserver"
 ]
 
 # CACHES = {
@@ -189,7 +190,7 @@ AXES_FAILURE_LIMIT = 5  # Number of failed attempts
 
 AXES_COOLOFF_TIME = timedelta(minutes=3)  # Lockout period after reaching failure limit
 
-SECURE_SSL_REDIRECT = False
+SECURE_SSL_REDIRECT = True
 
 AXES_LOCKOUT_PARAMETERS = ["username"]
 
