@@ -12,9 +12,6 @@ COPY . .
 # Install module dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Run database migrations to initialize the SQLite database
-RUN python manage.py migrate
-
 # Make migrations, as described in the install tutorial from the original repository
 RUN python manage.py makemigrations && python manage.py migrate
 
