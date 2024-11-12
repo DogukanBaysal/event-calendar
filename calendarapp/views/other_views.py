@@ -46,7 +46,7 @@ def next_month(d):
     return month
 
 
-@method_decorator(ratelimit(key='ip', rate='5/m', method='POST'))
+@method_decorator(ratelimit(key='ip', rate='20/m', method='POST'))
 @login_required(login_url="signup")
 def create_event(request):
     form = EventForm(request.POST or None)
@@ -72,7 +72,7 @@ class EventEdit(generic.UpdateView):
     template_name = "event.html"
 
 
-@method_decorator(ratelimit(key='ip', rate='5/m', method='GET'))
+@method_decorator(ratelimit(key='ip', rate='20/m', method='GET'))
 @login_required(login_url="signup")
 def event_details(request, event_id):
     event = Event.objects.get(id=event_id)
@@ -113,7 +113,7 @@ class CalendarViewNew(LoginRequiredMixin, generic.View):
     template_name = "calendarapp/calendar.html"
     form_class = EventForm
 
-    @method_decorator(ratelimit(key='ip', rate='5/m', method='GET'))
+    @method_decorator(ratelimit(key='ip', rate='20/m', method='GET'))
     def get(self, request, *args, **kwargs):
         forms = self.form_class()
         events = Event.objects.get_all_events(user=request.user)
@@ -134,7 +134,7 @@ class CalendarViewNew(LoginRequiredMixin, generic.View):
                    "events_month": events_month}
         return render(request, self.template_name, context)
 
-    @method_decorator(ratelimit(key='ip', rate='5/m', method='POST'))
+    @method_decorator(ratelimit(key='ip', rate='20/m', method='POST'))
     def post(self, request, *args, **kwargs):
         forms = self.form_class(request.POST)
         if forms.is_valid():

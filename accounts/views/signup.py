@@ -15,12 +15,13 @@ class SignUpView(View):
     template_name = "accounts/signup.html"
     form_class = SignUpForm
 
+    @method_decorator(ratelimit(key='ip', rate='20/m', method='GET'))
     def get(self, request, *args, **kwargs):
         forms = self.form_class()
         context = {"form": forms}
         return render(request, self.template_name, context)
 
-    @method_decorator(ratelimit(key='ip', rate='5/m', method='POST'))
+    @method_decorator(ratelimit(key='ip', rate='20/m', method='POST'))
     def post(self, request, *args, **kwargs):
         forms = self.form_class(request.POST)
         if forms.is_valid():
